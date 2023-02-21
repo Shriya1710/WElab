@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>firebase</title>
+    <style>label{display:inline-block;width: 80px}</style>
+</head>
+<body>
+    <h1>firebase crud operations</h1>
+    <label>NAME</label> <input id="Name" type="text"></input> <br><br>
+    <label>ROLLNO</label> <input id="Rollno" type="text"></input>  <br><br>
+    <label>SECTION</label> <input id="Section" type="text"></input>  <br><br>
+    <label>GENDER</label> 
+    <select id="Gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+    </select>
+
+    <hr>
+    <button id="addbtn">INSERT</button>
+    <button id="readbtn">READ</button>
+    <button id="deletebtn">DELETE</button>
+    <button id="updatebtn">UPDATE</button>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyA3oix5PkRCU7sTXfumXzb_jD0D9iQiCOA",
+          authDomain: "fire-7aa9c.firebaseapp.com",
+          databaseURL: "https://fire-7aa9c-default-rtdb.firebaseio.com",
+          projectId: "fire-7aa9c",
+          storageBucket: "fire-7aa9c.appspot.com",
+          messagingSenderId: "39346367208",
+          appId: "1:39346367208:web:14df18c50b044f0e5c775d"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        import {getDatabase,ref,get,set,child,update,remove} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+
+        const db=getDatabase();
+        //references
+        var name=document.getElementById("Name");
+        var rollno=document.getElementById("Rollno");
+        var section=document.getElementById("Section");
+        var gender=document.getElementById("Gender");
+
+        var addbtn=document.getElementById("addbtn");
+        var readbtn=document.getElementById("readbtn");
+        var deletebtn=document.getElementById("deletebtn");
+        var updatebtn=document.getElementById("updatebtn");
+        //functions
+
+        function addDetails()
+        {
+           set(ref(db,"studentdetails/"+rollno.value),{
+             Stuname:name.value,
+             Sturoll:rollno.value,
+             Stusec:section.value,
+             Stugen:gender.value
+           }) 
+           .then(()=>{
+               alert("data stored succesfully");
+           })
+           .catch((error)=>{
+               alert("unsuccesful,error"+error);
+           });
+        }
+        function readDetails()
+        {
+            const dbref=ref(db);
+             get(child(dbref,"studentdetails/"+rollno.value)).then((snapshot)=>{
+                if(snapshot.exists()){
+                    name.value=snapshot.val().Stuname;
+                    section.value=snapshot.val().Stusec;
+                    gender.value=snapshot.val().Stugen;
+                }
+                else{
+                    alert("no data found")
+                }
+             })
+             .catch((error)=>{
+               alert("unsuccesful,error"+error);
+           });
+
+        }
+        function updateDetails(){
+            update(ref(db,"studentdetails/"+rollno.value),{
+             Stuname:name.value,
+             Stusec:section.value,
+             Stugen:gender.value
+           }) 
+           .then(()=>{
+               alert("data updated succesfully");
+           })
+           .catch((error)=>{
+               alert("unsuccesful,error"+error);
+           }); 
+        }
+        function deleteDetails()
+        {
+            remove(ref(db,"studentdetails/"+rollno.value)) 
+           .then(()=>{
+               alert("data removed succesfully");
+           })
+           .catch((error)=>{
+               alert("unsuccesful,error"+error);
+           }); 
+        }
+        // assign events
+        addbtn.addEventListener("click",addDetails)
+        readbtn.addEventListener("click",readDetails)
+        updatebtn.addEventListener("click",updateDetails)
+        deletebtn.addEventListener("click",deleteDetails)
+
+      </script>
+</body>
+</html>
