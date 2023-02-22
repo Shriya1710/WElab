@@ -4,25 +4,26 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>firebase</title>
-    <style>label{display:inline-block;width: 80px}</style>
+    <title>Firebase</title>
+    <style>label{display:inline-block;width:80px}</style>
 </head>
 <body>
-    <h1>firebase crud operations</h1>
-    <label>NAME</label> <input id="Name" type="text"></input> <br><br>
-    <label>ROLLNO</label> <input id="Rollno" type="text"></input>  <br><br>
-    <label>SECTION</label> <input id="Section" type="text"></input>  <br><br>
-    <label>GENDER</label> 
-    <select id="Gender">
+    
+    <h1>Firebase CRUD operations</h1>
+    <label>NAME</label><input id="Name" type="text"></input><br><br>
+    <label>ROLLNO</label><input id="Rollno" type="text"></input><br><br>
+    <label>SECTION</label><input id="Section" type="text"></input><br><br>
+    <label>GENDER</label>
+      <select id="Gender">
         <option value="male">Male</option>
         <option value="female">Female</option>
-    </select>
-
+      </select>
     <hr>
     <button id="addbtn">INSERT</button>
     <button id="readbtn">READ</button>
-    <button id="deletebtn">DELETE</button>
     <button id="updatebtn">UPDATE</button>
+    <button id="deletebtn">DELETE</button>
+    <p id="a"></p>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
@@ -43,84 +44,94 @@
       
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-
-        import {getDatabase,ref,get,set,child,update,remove} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
-
+        import {getDatabase,ref,get,set,child,update,remove } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
         const db=getDatabase();
         //references
-        var name=document.getElementById("Name");
-        var rollno=document.getElementById("Rollno");
-        var section=document.getElementById("Section");
-        var gender=document.getElementById("Gender");
-
-        var addbtn=document.getElementById("addbtn");
-        var readbtn=document.getElementById("readbtn");
-        var deletebtn=document.getElementById("deletebtn");
-        var updatebtn=document.getElementById("updatebtn");
+        var name=document.getElementById("Name")
+        var rollno=document.getElementById("Rollno")
+        var section=document.getElementById("Section")
+        var gender=document.getElementById("Gender")
+        
+        var addbtn=document.getElementById("addbtn")
+        var readbtn=document.getElementById("readbtn")
+        var updatebtn=document.getElementById("updatebtn")
+        var deletebtn=document.getElementById("deletebtn")
+        var a=document.getElementById("a")
         //functions
-
         function addDetails()
         {
-           set(ref(db,"studentdetails/"+rollno.value),{
-             Stuname:name.value,
-             Sturoll:rollno.value,
-             Stusec:section.value,
-             Stugen:gender.value
-           }) 
-           .then(()=>{
-               alert("data stored succesfully");
-           })
-           .catch((error)=>{
-               alert("unsuccesful,error"+error);
-           });
+            set(ref(db,"studentdetails/"+rollno.value),{
+                stuname:name.value,
+                sturoll:rollno.value,
+                stusec:section.value,
+                stugen:gender.value
+            })
+            .then(()=>{
+                alert("data stored succesfully")
+            })
+            .catch((error)=>{
+                alert("unsuccesful"+error)
+            });
         }
-        function readDetails()
+        function readDetails(){
+            //const dbref=ref(db);
+            get(child(ref(db),"studentdetails"))
+            .then((snapshot)=>{
+                let arr=Object.values(snapshot.val())
+                // if(snapshot.exists())
+                // {
+                //     document.write(arr)
+                // }
+                // else{
+                //     document.write("no data found")
+                // }
+                console.log(arr)
+                arr.forEach(ele=>{
+                    console.log(ele.stuname)
+                    a.innerHTML+=`Name: ${ele.stuname} &nbsp&nbsp&nbsp
+                      Roll number: ${ele.sturoll}  &nbsp&nbsp&nbsp
+                      Section: ${ele.stusec}   &nbsp&nbsp&nbsp
+                      gender: ${ele.stugen} <br>
+                      <hr><br>`
+                })
+            })
+            .catch((error)=>{
+                alert("unsuccesful"+error)
+            });
+        }
+        function updateDetails()
         {
-            const dbref=ref(db);
-             get(child(dbref,"studentdetails/"+rollno.value)).then((snapshot)=>{
-                if(snapshot.exists()){
-                    name.value=snapshot.val().Stuname;
-                    section.value=snapshot.val().Stusec;
-                    gender.value=snapshot.val().Stugen;
-                }
-                else{
-                    alert("no data found")
-                }
-             })
-             .catch((error)=>{
-               alert("unsuccesful,error"+error);
-           });
-
-        }
-        function updateDetails(){
             update(ref(db,"studentdetails/"+rollno.value),{
-             Stuname:name.value,
-             Stusec:section.value,
-             Stugen:gender.value
-           }) 
-           .then(()=>{
-               alert("data updated succesfully");
-           })
-           .catch((error)=>{
-               alert("unsuccesful,error"+error);
-           }); 
+                stuname:name.value,
+                sturoll:rollno.value,
+                stusec:section.value,
+                stugen:gender.value
+            })
+            .then(()=>{
+                alert("data updated succesfully")
+            })
+            .catch((error)=>{
+                alert("unsuccesful"+error)
+            });
         }
         function deleteDetails()
         {
-            remove(ref(db,"studentdetails/"+rollno.value)) 
-           .then(()=>{
-               alert("data removed succesfully");
-           })
-           .catch((error)=>{
-               alert("unsuccesful,error"+error);
-           }); 
+            remove(ref(db,"studentdetails/"+rollno.value))
+            .then(()=>{
+                alert("data deleted succesfully")
+            })
+            .catch((error)=>{
+                alert("unsuccesful"+error)
+            });
         }
-        // assign events
+        //events
         addbtn.addEventListener("click",addDetails)
         readbtn.addEventListener("click",readDetails)
         updatebtn.addEventListener("click",updateDetails)
         deletebtn.addEventListener("click",deleteDetails)
-
+        
+        
       </script>
+      
 </body>
 </html>
